@@ -15,15 +15,23 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
-  const hook = () => {
-    console.log('Effect')
+
+  useEffect(() => {
     noteServices
       .getAll()
       .then(incialNotes => {
         setNotes(incialNotes)
       })
-  }
-  useEffect(hook, [])
+  }, [])
+
+  useEffect(() => {
+    const loggedUserJSON = window.localStorage.getItem('loggedNoteappUser')
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON)
+      setUser(user)
+      noteServices.setToken(user.token)
+    }
+  }, [])
 
   const addNote = (event) => {
     event.preventDefault()
@@ -78,6 +86,10 @@ const App = () => {
       const user = await loginServices.login({
         username, password
       })
+      window.localStorage.setItem(
+        'loggedNoteappUser', JSON.stringify(user)
+      )
+
       noteServices.setToken(user.token)
       setUser(user)
       setUsername('')
@@ -112,7 +124,7 @@ const App = () => {
           type='password'
           value={password}
           name='Password'
-          autoComplete='current-password'        
+          autoComplete='current-password'
           onChange={({ target }) => setPassword(target.value)}
         />
       </div>
