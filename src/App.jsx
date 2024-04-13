@@ -6,6 +6,8 @@ import loginServices from './services/login'
 import Notification from './components/Notification'
 import Footer from './components/Footer'
 import LoginForm from './components/LoginForm'
+import Togglable from './components/Togglable'
+import NoteForm from './components/NoteForm'
 
 const App = () => {
   const [notes, setNotes] = useState([])
@@ -132,13 +134,11 @@ const App = () => {
   }
 
   const noteForm = () => (
-    <form onSubmit={addNote}>
-      <input
-        value={newNote}
-        onChange={handleNoteChange}
-      />
-      <button type='submit'>Save</button>
-    </form>
+    <NoteForm 
+      onSubmit={addNote}
+      value={newNote}
+      handleChange={handleNoteChange}
+    />
   )
 
   return (
@@ -146,13 +146,18 @@ const App = () => {
       <h1>Notes</h1>
       <Notification message={errorMessage} />
 
-      {user === null ?
-        loginForm() :
-        <div>
-          <p>{user.name} logged</p>
-          {noteForm()}
-        </div>
-      }
+      {!user && loginForm()}
+
+      {user && <div>
+        <p>{user.name} logged</p>             
+        <Togglable buttonLabel='new note'>
+          <NoteForm
+            onSubmit={addNote}
+            value={newNote}
+            handleChange={handleNoteChange}
+          />
+        </Togglable>
+      </div>}
 
       <button onClick={() => setShowAll(!showAll)}>Show {showAll ? 'important' : 'all'}</button>
 
