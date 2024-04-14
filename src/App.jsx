@@ -11,12 +11,11 @@ import NoteForm from './components/NoteForm'
 
 const App = () => {
   const [notes, setNotes] = useState([])
-  const [newNote, setNewNote] = useState('')
   const [showAll, setShowAll] = useState(true)
   const [errorMessage, setErrorMessage] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)  
+  const [user, setUser] = useState(null)
 
 
   useEffect(() => {
@@ -36,22 +35,21 @@ const App = () => {
     }
   }, [])
 
-  const addNote = (event) => {
-    event.preventDefault()
-    const noteObject = {
-      content: newNote,
-      date: new Date().toISOString(),
-      important: Math.random() < 0.5,
-      // id: notes.length + 1
-    }
-    console.log('noteObject', noteObject)
+  const addNote = (noteObject) => {
+    // event.preventDefault()
+    // const noteObject = {
+    //   content: newNote,
+    //   date: new Date().toISOString(),
+    //   important: Math.random() < 0.5,
+    //   // id: notes.length + 1
+    // }
+    // console.log('noteObject', noteObject)
 
     noteServices
       .create(noteObject)
       .then(returnedNote => {
         console.log(returnedNote)
         setNotes(notes.concat(returnedNote))
-        setNewNote('')
       })
   }
 
@@ -64,7 +62,7 @@ const App = () => {
       .then(returnedNote => {
         setNotes(notes.map(note => note.id !== id ? note : returnedNote))
       })
-      .catch(error => {
+      .catch(() => {
         setErrorMessage(
           `Note '${note.content}' was already deleted from server`
         )
@@ -74,11 +72,6 @@ const App = () => {
 
         setNotes(notes.filter(n => n.id !== id))
       })
-  }
-
-  const handleNoteChange = (event) => {
-    console.log(event.target.value)
-    setNewNote(event.target.value)
   }
 
   const handleLogin = async (event) => {
@@ -123,15 +116,6 @@ const App = () => {
     </div>
   )
 
-
-  const noteForm = () => (
-    <NoteForm
-      onSubmit={addNote}
-      value={newNote}
-      handleChange={handleNoteChange}
-    />
-  )
-
   return (
     <div>
       <h1>Notes</h1>
@@ -142,11 +126,7 @@ const App = () => {
       {user && <div>
         <p>{user.name} logged</p>
         <Togglable buttonLabel='new note'>
-          <NoteForm
-            onSubmit={addNote}
-            value={newNote}
-            handleChange={handleNoteChange}
-          />
+          <NoteForm createNote={addNote} />
         </Togglable>
       </div>}
 
@@ -162,7 +142,6 @@ const App = () => {
         )
         )}
       </ul>
-
       <Footer />
     </div>
   )
