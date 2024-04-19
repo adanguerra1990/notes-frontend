@@ -36,7 +36,7 @@ const App = () => {
     }
   }, [])
 
-  const addNote = (noteObject) => {    
+  const addNote = (noteObject) => {
     noteFormRef.current.toggleVisibility()
     noteServices
       .create(noteObject)
@@ -91,6 +91,11 @@ const App = () => {
     }
   }
 
+  const handleLogout = () => {
+    window.localStorage.removeItem('loggedNoteappUser')
+    setUser(null)
+  }
+
   const notesToShow = showAll
     ? notes
     : notes.filter(note => note.important === true)
@@ -117,7 +122,10 @@ const App = () => {
       {!user && loginForm()}
 
       {user && <div>
-        <p>{user.name} logged</p>
+        <div>
+          <h2>{user.name} logged</h2>
+          <button onClick={handleLogout}>Logout</button>
+        </div>
         <Togglable buttonLabel='new note' ref={noteFormRef}>
           <NoteForm createNote={addNote} />
         </Togglable>
